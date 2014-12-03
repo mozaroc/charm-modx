@@ -34,10 +34,9 @@ juju-log "Extract"
 mkdir -p $install_path
 mkdir -p /tmp/modx
 
-unzip /tmp/modx.zip opencart-2.0.0.0/upload/\* -d /tmp/opencart
+unzip /tmp/modx.zip -d /tmp/modx
 
 cp -fR /tmp/modx/revolution-master/* $install_path
-rm -f /tmp/opencart.zip
 
 mv $install_path/_build/build.config.sample.php $install_path/_build/build.config.php
 mv $install_path/_build/build.properties.sample.php $install_path/_build/build.properties.php
@@ -47,6 +46,8 @@ php $install_path/_build/transport.core.php
 mv $install_path/ht.access $install_path/.htaccess
 
 sed -i "s|;date.timezone =|date.timezone = Europe/Moscow|g" /etc/php5/apache2/php.ini
+
+service apache2 restart
 
 set_permissions
 
