@@ -1,0 +1,18 @@
+name: modx
+summary: "ModX CMS"
+maintainer: Eugene Alekseev <ealekseev@clodo.ru>
+description: |
+  OpenCart is designed feature rich, easy to use, search engine friendly and with a visually appealing interface.
+categories: ["applications"]
+requires:
+  mail:
+    interface: smtp
+  db:
+    interface: mysql
+provides:
+  website:
+    interface: http
+peers:
+  loadbalancer:
+    interface: reversenginx
+    

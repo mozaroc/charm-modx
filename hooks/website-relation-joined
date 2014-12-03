@@ -1,0 +1,3 @@
+#!/bin/sh -ex
+
+relation-set port=8080 hostname=`unit-get public-address`

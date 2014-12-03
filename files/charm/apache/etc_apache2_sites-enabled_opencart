@@ -1,0 +1,27 @@
+Listen *:8080
+
+<VirtualHost *:8080>
+  ServerName localhost
+  ServerAlias *
+  ServerAdmin webmaster@localhost
+  
+  UseCanonicalName Off
+
+  DocumentRoot /srv/www/htdocs
+<Directory /srv/>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+</Directory>
+
+  <Directory /srv/www/htdocs>
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    DirectoryIndex index.php
+  </Directory>
+
+  ErrorLog ${APACHE_LOG_DIR}/modx-error.log
+
+  LogLevel warn
+  CustomLog ${APACHE_LOG_DIR}/modx-access.log combined
+</VirtualHost>

@@ -1,0 +1,50 @@
+#!/bin/sh -ex
+
+# Boiler plate code to print context of this script
+juju-log $JUJU_REMOTE_UNIT modified its settings
+juju-log Relation settings:
+relation-get
+juju-log Relation members:
+relation-list
+
+. inc/common
+
+# If there is a config file already, Joomla is already installed & config'ed
+if [ -f "$config_file_path" ]; then
+	# TODO: Update the config file with new DB values even 
+	#       if opencart is alredy installed
+	juju-log "Joomla is already setup, just silently going away"
+	exit 0
+fi
+
+# Relation properties
+database=`relation-get database`
+user=`relation-get user`
+password=`relation-get password`
+host=`relation-get private-address`
+
+# Sanity checks
+## If there is no database name defined, die
+if [ -z "$database" ] ; then
+    exit 0
+fi
+
+juju-log Config
+
+sed -i "s|value=\"{\$config.database_server}\"|value=\"$host\"|g" $install_path/setup/templates/database.tpl
+sed -i "s|value=\"{\$config.database_user}\"|value=\"$user\"|g" $install_path/setup/templates/database.tpl
+sed -i "s|value=\"{\$config.database_password}\"|value=\"$password\"|g"  $install_path/setup/templates/database.tpl
+sed -i "s|value=\"{\$config.dbase}\"|value=\"$database\"|g"  $install_path/setup/templates/database.tpl
+
+
+# least access permissions for the configuration file
+#chown www-data:www-data $config_file_path
+#chmod 0640 $config_file_path
+
+[ ! -f $install_path/config.php ] && mv $install_path/config-dist.php $install_path/config.php
+[ ! -f $install_path/admin/config.php ] && mv $install_path/admin/config-dist.php $install_path/admin/config.php
+
+
+juju-log "Opening port 80"
+open-port 80/tcp
+open-port 443/tcp

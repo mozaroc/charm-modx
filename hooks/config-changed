@@ -1,0 +1,39 @@
+#!/bin/sh -ex
+
+. inc/common
+
+tuning_level=`config-get tuning`
+engine=`config-get engine`
+unit_address=`unit-get private-address`
+
+if [ "x$engine" = "xapache" -o "x${engine}" = "xapache2" ]; then
+	if [ -f .web-engine ]; then
+		web_engine=`cat .web-engine`
+		service $web_engine stop
+	fi
+	apt-get -y purge nginx
+	apt-get --no-install-suggests --no-install-recommends install -y apache2 libapache2-mod-php5
+	service apache2 stop
+
+  mkdir -p /srv/www/htdocs
+
+  rm -f /etc/apache2/sites-available/*
+	rm -f /etc/apache2/sites-enabled/*
+	a2enmod actions rewrite alias headers php5
+
+	juju-log "Installing Apache loadbalance config..."
+	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_loadbalancer /etc/apache2/sites-available/loadbalancer.conf
+	sed -i -e "s/^  ServerName .*/  ServerName ${unit_address}/" /etc/apache2/sites-available/loadbalancer.conf
+	a2ensite loadbalancer
+
+	juju-log "Installing Apache opencart config..."
+	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_opencart /etc/apache2/sites-available/opencart.conf
+	a2ensite opencart
+
+	echo "apache2" > .web-engine
+fi
+
+hooks/loadbalancer-rebuild
+
+juju-log "Restarting Services ..."
+hooks/restart

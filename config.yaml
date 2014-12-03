@@ -1,0 +1,15 @@
+options:
+  domain:
+    type: string
+    default: ""
+    description: |
+      Provide registered domain name on which this site responding.
+  tuning:
+    type: string
+    default: single
+    description: |
+      This is the tuning level for this setup. There are three options: "bare", "single", and "optimized".
+  engine:
+    type: string
+    default: apache
+    description: "Currently two web server engines are supported: nginx and apache."

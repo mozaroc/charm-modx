@@ -1,0 +1,61 @@
+#!/bin/sh -ex
+
+. inc/common
+
+juju-log "Installing software"
+
+ver=$(config-get [version])
+
+
+apt-get update
+
+apt-get -y install --no-install-suggests --no-install-recommends  apache2 php5-gd libapache2-mod-php5 mysql-client-core-5.5 php5-mysql pwgen php5-curl php5-mcrypt unzip exim4-daemon-light php5-cli
+
+sed -i "s|dc_eximconfig_configtype='local'|dc_eximconfig_configtype='internet'|g" /etc/exim4/update-exim4.conf.conf
+
+update-exim4.conf
+
+a2enmod php5 headers
+a2dissite 000-default
+
+php5enmod mcrypt
+php5enmod curl
+
+service apache2 restart
+
+juju-log "Download"
+
+OC_TARBALL="https://github.com/modxcms/revolution/archive/master.zip"
+
+curl -vv -L $OC_TARBALL > /tmp/modx.zip
+
+juju-log "Extract"
+
+mkdir -p $install_path
+mkdir -p /tmp/modx
+
+unzip /tmp/modx.zip opencart-2.0.0.0/upload/\* -d /tmp/opencart
+
+cp -fR /tmp/modx/revolution-master/* $install_path
+rm -f /tmp/opencart.zip
+
+mv $install_path/_build/build.config.sample.php $install_path/_build/build.config.php
+mv $install_path/_build/build.properties.sample.php $install_path/_build/build.properties.php
+
+php $install_path/_build/transport.core.php
+
+mv $install_path/ht.access $install_path/.htaccess
+
+sed -i "s|;date.timezone =|date.timezone = Europe/Moscow|g" /etc/php5/apache2/php.ini
+
+set_permissions
+
+#(
+#patch -d $install_path -p1 < files/opencart/default_db.patch
+#)
+
+# Secret key for configuring OpenCart
+#secret_key=`pwgen 32 1`
+#sed -i "s|public \$secret = '.*';|public \$secret = '"$secret_key"';|g" $install_path/installation/configuration.php-dist
+
+# Set better file permissions
