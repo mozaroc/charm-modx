@@ -21,19 +21,15 @@ if [ "x$engine" = "xapache" -o "x${engine}" = "xapache2" ]; then
 	rm -f /etc/apache2/sites-enabled/*
 	a2enmod actions rewrite alias headers php5
 
-	juju-log "Installing Apache loadbalance config..."
-	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_loadbalancer /etc/apache2/sites-available/loadbalancer.conf
-	sed -i -e "s/^  ServerName .*/  ServerName ${unit_address}/" /etc/apache2/sites-available/loadbalancer.conf
-	a2ensite loadbalancer
 
 	juju-log "Installing Apache opencart config..."
-	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_opencart /etc/apache2/sites-available/opencart.conf
-	a2ensite opencart
+	install -o root -g root -m 0644 files/charm/apache/etc_apache2_ports /etc/apache2/ports.conf
+	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_modx /etc/apache2/sites-available/modx.conf
+	a2ensite modx
 
 	echo "apache2" > .web-engine
 fi
 
-hooks/loadbalancer-rebuild
 
 juju-log "Restarting Services ..."
 hooks/restart
