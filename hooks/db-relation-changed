@@ -31,7 +31,7 @@ fi
 
 juju-log Config
 
-sed -i "s|value=\"{\$config.database_server}\"|value=\"$host\"|g" $install_path/setup/templates/database.tpl
+sed -i "s|value=\"{\$config.database_server}\"|value=\"localhost\"|g" $install_path/setup/templates/database.tpl
 sed -i "s|value=\"{\$config.database_user}\"|value=\"$user\"|g" $install_path/setup/templates/database.tpl
 sed -i "s|value=\"{\$config.database_password}\"|value=\"$password\"|g"  $install_path/setup/templates/database.tpl
 sed -i "s|value=\"{\$config.dbase}\"|value=\"$database\"|g"  $install_path/setup/templates/database.tpl
