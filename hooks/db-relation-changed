@@ -41,8 +41,8 @@ sed -i "s|value=\"{\$config.dbase}\"|value=\"$database\"|g"  $install_path/setup
 #chown www-data:www-data $config_file_path
 #chmod 0640 $config_file_path
 
-[ ! -f $install_path/config.php ] && mv $install_path/config-dist.php $install_path/config.php
-[ ! -f $install_path/admin/config.php ] && mv $install_path/admin/config-dist.php $install_path/admin/config.php
+#[ ! -f $install_path/config.php ] && mv $install_path/config-dist.php $install_path/config.php
+#[ ! -f $install_path/admin/config.php ] && mv $install_path/admin/config-dist.php $install_path/admin/config.php
 
 
 juju-log "Opening port 80"
